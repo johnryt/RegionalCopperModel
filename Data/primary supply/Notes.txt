@@ -1,0 +1,2 @@
+Opearting mine pool: used for max5 closing method
+Opening subsample parameter: latest updates after TCRC also uses a ten year look back (for new mines) instead of single value
