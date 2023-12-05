@@ -3,6 +3,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from scipy.optimize import fsolve
 idx=pd.IndexSlice
+from datetime import datetime
 
 
 def tot_cash_cost_cal(price_dollar, minesite_cost_pto, og_percent, recovery_percent, paid_percent, tcrc_cpp, freight_cpp, royalty_cpp, ore_prod=1):
@@ -90,7 +91,7 @@ def simulate_mine_life(simulation_time, price_series, tcrc_cpp_series,
     for i in range(n_years):
         t = simulation_time[i]
         price_t = price_series.loc[t]
-        if t == pd.datetime(2018,1,1):
+        if t == datetime(2018,1,1):
             tcrc_cpp = mine_data.loc['TCRC (cents/lb)']
         else:
             tcrc_cpp = tcrc_cpp_series[t]
@@ -245,7 +246,7 @@ def simulate_mine_life_one_year(year_i, init_year, price_series, tcrc_series, hy
     discount = hyper_param.loc['Discount rate', 'Value']
 
     ## Dynamic mine data
-    t = pd.datetime(year_i, 1, 1)
+    t = datetime(year_i, 1, 1)
     t_plus_1=t+relativedelta(years=1)
     price_t = price_series.loc[t]
     cum_ore_prod_kt = mine_life_stats.loc[t, 'Cumulative ore treated (kt)']
@@ -383,7 +384,7 @@ def simulate_mine_life_one_year(year_i, init_year, price_series, tcrc_series, hy
     return mine_life_stats
 
 def mine_life_init(simulation_time, mine_data, init_year):
-    init_time=pd.datetime(init_year, 1, 1)
+    init_time=datetime(init_year, 1, 1)
     mine_life_stats_init = pd.DataFrame(index=simulation_time, 
                                         columns=['Head grade (%)', 'Ore treated (kt)', 'Cumulative ore treated (kt)',
                                                  'Recovered metal production (kt)', 'Paid metal production (kt)', 
@@ -566,12 +567,12 @@ def new_mine_data(year, simulation_end_time, incentive_pool, price_series, tcrc_
                   subsample_size, irr_cutoff, close_price_method='max', close_years_back=5,
                   trailing_years=10, block_size=2000):
     # year is mine opening year, not year when opening decision is made
-    simulation_time=pd.date_range(pd.datetime(year,1,1), simulation_end_time, freq='AS')
+    simulation_time=pd.date_range(datetime(year,1,1), simulation_end_time, freq='AS')
     # Use -3 year trailing price as projection for the future
-    price_series_trailing_av=price_series.rolling(trailing_years).mean().loc[pd.datetime(year-3, 1, 1)]
+    price_series_trailing_av=price_series.rolling(trailing_years).mean().loc[datetime(year-3, 1, 1)]
     price_expected=pd.Series(price_series_trailing_av, index=simulation_time)
     
-    tcrc_series_trailing_av=tcrc_series.rolling(trailing_years).mean().loc[pd.datetime(year-3, 1, 1)]
+    tcrc_series_trailing_av=tcrc_series.rolling(trailing_years).mean().loc[datetime(year-3, 1, 1)]
     tcrc_expected=pd.Series(tcrc_series_trailing_av, index=simulation_time)
     # Skipping block_size every year
     incentive_id_subsample=incentive_pool.index[(year-2019)*block_size:(year-2019)*block_size+subsample_size]
@@ -605,7 +606,7 @@ def total_production_calculator_newmine_multi_index(open_parameter, simulation_e
                                          close_price_method, close_years_back)
         print('Found mines that could open: ', mine_data_new_year.shape[0])
         if mine_data_new_year.shape[0]>0:
-            tot_prod_mi_this_year=total_production_calculator_multi_index(pd.date_range(pd.datetime(year,1,1), simulation_end_time, freq='AS'),
+            tot_prod_mi_this_year=total_production_calculator_multi_index(pd.date_range(datetime(year,1,1), simulation_end_time, freq='AS'),
                                                                          hyper_param, price_series, tcrc_series, mine_data_new_year,
                                                                          close_price_method, close_years_back)
             tot_prod_mi=pd.concat([tot_prod_mi, tot_prod_mi_this_year], axis=1)
@@ -629,7 +630,7 @@ def total_production_calculator_newmine_multi_index_cali(open_parameter, simulat
                                          close_price_method, close_years_back)
         print('Found mines that could open: ', mine_data_new_year.shape[0])
         if mine_data_new_year.shape[0]>0:
-            tot_prod_mi_this_year=total_production_calculator_multi_index(pd.date_range(pd.datetime(year,1,1), simulation_end_time, freq='AS'),
+            tot_prod_mi_this_year=total_production_calculator_multi_index(pd.date_range(datetime(year,1,1), simulation_end_time, freq='AS'),
                                                                          hyper_param, price_series, tcrc_series, mine_data_new_year,
                                                                          close_price_method, close_years_back)
             tot_prod_mi=pd.concat([tot_prod_mi, tot_prod_mi_this_year], axis=1)

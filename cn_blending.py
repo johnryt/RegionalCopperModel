@@ -381,7 +381,7 @@ def blend(availability, alloy_demand, raw_price, s2s, prod_spec, raw_spec, sec_r
         return demand
     # print(n)
     
-def system_initialization():
+def system_initialization(og_fruity_alloys):
     # Set rollover to 1 for previous year's scrap becoming the new year's scrap
     rollover = 1
     # Set scrappy to 1 for scrap balance being determined by scrap consumption from blending rather than semis demand, set it to 2 to only use the subset of scraps described by scrap_subset variable

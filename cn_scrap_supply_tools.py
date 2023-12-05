@@ -12,7 +12,7 @@ def lognorm_mean(mu, sigma_to_mu, mean):
 
 # Calculate mu based on lognormal mean
 def calc_mu(sigma_to_mu, mean, x0, **kwargs):
-    return np.asscalar(fsolve(lognorm_mean, x0=x0, args=(sigma_to_mu, mean), **kwargs))
+    return fsolve(lognorm_mean, x0=x0, args=(sigma_to_mu, mean), **kwargs).item()
 
 
 # Build lifetime dataframe
@@ -222,6 +222,7 @@ def new_scrap_gen_oneyear(use_product_year_i, product_to_waste_no_loss, product_
             new_scrap_metal_recovered_alloyed.loc['Electronic'] -= fruity_alloys.loc[:,'Quantity'].sum()
         else:
             new_scrap_metal_recovered_alloyed.loc['Diverse'] -= fruity_alloys.loc[:,'Quantity'].sum()
+    
             
     # Convert to shapes (only for alloyed scrap):
     new_scrap_recovered_shapes_alloyed = pd.Series(0,index = s2s.index)
@@ -254,7 +255,7 @@ def new_scrap_gen_oneyear(use_product_year_i, product_to_waste_no_loss, product_
         new_scrap_alloys = prod_spec1.loc[:,['Primary code','Alloy Type','High_Cu', 'Low_Cu', 'High_Zn', 'Low_Zn', 'High_Pb', 'Low_Pb',
            'High_Sn', 'Low_Sn', 'High_Ni', 'Low_Ni', 'High_Al', 'Low_Al',
            'High_Mn', 'Low_Mn', 'High_Fe', 'Low_Fe', 'Quantity']].copy()
-        if type(fruity_alloys) != type(0):
+        if type(fruity_alloys1) != type(0):
             new_scrap_alloys.loc[fruity_alloys.index,'Primary code'] = fruity_alloys.index
         new_scrap_alloys.drop_duplicates('Primary code', inplace = True, keep = 'first')
         new_scrap_alloys.index = new_scrap_alloys.loc[:,'Primary code']
