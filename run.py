@@ -21,7 +21,7 @@ from cn_blending import *
 import warnings
 warnings.filterwarnings("ignore") # to deal with pandas datetime deprecation
 
-reinitialize_historical = False
+reinitialize_historical = True
 
 def system_initialization():
     # Set rollover to 1 for previous year's scrap becoming the new year's scrap
@@ -697,6 +697,13 @@ if __name__=='__main__':
     product_eol_history_cn=product_reach_eol(use_product_history_cn, product_lifetime_freq_df_cn)
     product_eol_history_rw=product_reach_eol(use_product_history_rw, product_lifetime_freq_df)
     product_eol_history=product_eol_history_cn + product_eol_history_rw
+    product_eol_future_cn=pd.DataFrame(0, index=np.arange(2019, 2041, 1), columns=product_eol_history.columns)
+    product_eol_future_rw=pd.DataFrame(0, index=np.arange(2019, 2041, 1), columns=product_eol_history.columns)
+    product_eol_future=pd.DataFrame(0, index=np.arange(2019, 2041, 1), columns=product_eol_history.columns)
+    product_eol_all_life_cn=pd.concat([product_eol_history_cn, product_eol_future_cn])
+    product_eol_all_life_rw=pd.concat([product_eol_history_rw, product_eol_future_rw])
+    product_eol_all_life=pd.concat([product_eol_history, product_eol_future])
+    
     # product_eol_history = product_reach_eol(use_product_history, product_lifetime_freq_df)
     waste_from_old_history_cn=product_eol_history_cn.apply(lambda x: (x*product_to_waste_collectable.T).sum(axis=1), axis=1).mul(sort_eff_cn).mul(collect_rate_cn)
     waste_from_old_history_rw=product_eol_history_rw.apply(lambda x: (x*product_to_waste_collectable.T).sum(axis=1), axis=1).mul(sort_eff).mul(collect_rate)
@@ -1022,6 +1029,9 @@ if __name__=='__main__':
         'waste_from_old_future',
         'waste_from_old_future_cn',
         'waste_from_old_future_rw',
+        'waste_from_old_all_life',
+        'waste_from_old_all_life_cn',
+        'waste_from_old_all_life_rw',
         'waste_all_life',
         'waste_all_life_cn',
         'waste_all_life_rw',
@@ -1578,14 +1588,17 @@ if __name__=='__main__':
                 product_eol_year_i_cn = product_reach_eol_oneyear(year_i, use_product_all_life_cn, product_lifetime_freq_df)
                 product_eol_year_i_rw = product_reach_eol_oneyear(year_i, use_product_all_life_rw, product_lifetime_freq_df)
                 product_eol_year_i = product_eol_year_i_cn + product_eol_year_i_rw
+                product_eol_all_life_cn.loc[year_i] = product_eol_year_i_cn
+                product_eol_all_life_rw.loc[year_i] = product_eol_year_i_rw
+                product_eol_all_life.loc[year_i] = product_eol_year_i
                 waste_collected_year_i_cn=waste_collected_oneyear(product_eol_year_i_cn, product_to_waste_collectable, sort_eff_cn, collect_rate_cn)
         #         product_eol_year_i = product_reach_eol_oneyear(year_i, use_product_all_life, product_lifetime_freq_df)
         #         waste_collected_year_i=waste_collected_oneyear(product_eol_year_i, product_to_waste_collectable, sort_eff, collect_rate)
                 waste_collected_year_i_rw=waste_collected_oneyear(product_eol_year_i_rw, product_to_waste_collectable, sort_eff, collect_rate)
                 waste_collected_year_i = waste_collected_year_i_cn + waste_collected_year_i_rw
-                waste_from_old_future.loc[year_i]=waste_collected_year_i
-                waste_from_old_future_cn.loc[year_i]=waste_collected_year_i_cn
-                waste_from_old_future_rw.loc[year_i]=waste_collected_year_i_rw
+                waste_from_old_all_life.loc[year_i]=waste_collected_year_i
+                waste_from_old_all_life_cn.loc[year_i]=waste_collected_year_i_cn
+                waste_from_old_all_life_rw.loc[year_i]=waste_collected_year_i_rw
 
                 # Old scrap available by scrap type
                 old_scrap_available_year_i_cn = old_scrap_gen_oneyear(product_eol_year_i_cn, product_to_waste_collectable, \
