@@ -21,7 +21,7 @@ from cn_blending import *
 import warnings
 warnings.filterwarnings("ignore") # to deal with pandas datetime deprecation
 
-reinitialize_historical = False
+reinitialize_historical = True
 
 def system_initialization():
     # Set rollover to 1 for previous year's scrap becoming the new year's scrap
