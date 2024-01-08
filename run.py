@@ -412,6 +412,8 @@ if __name__=='__main__':
     scraps = list(historical_alloyed.columns)
     historical_spa = historical_alloyed.apply(lambda x: -x + historical_lme_price)
     raw_price = pd.concat([historical_price.loc[:,'Ref_Cu':'Cartridge'],ref_prices_future.loc[2019:,:]],sort=False)
+    historical_no1 = historical_no1.reset_index()
+    historical_no2 = historical_no2.reset_index()
     raw_price.loc[:,'No.1'] = historical_no1
     raw_price.loc[:,'No.2'] = historical_no2
     raw_price.loc[2019:,:] = 0
