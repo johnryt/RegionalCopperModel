@@ -104,7 +104,6 @@ Pygments==2.16.1
 pyhdfe==0.2.0
 pyina==0.2.8
 pyparsing==3.0.9
-PySCIPOpt @ file:///D:/bld/pyscipopt_1638955332173/work
 python-dateutil==2.8.2
 python-json-logger==2.0.7
 pytz==2023.3
