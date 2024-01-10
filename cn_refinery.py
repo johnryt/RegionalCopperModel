@@ -1,5 +1,5 @@
 import pandas as pd
-
+from datetime import datetime
 
 def cu_growth_cal(TCRC_growth, TCRC_elas, ref_bal = 0, CU_ref_bal_elas = 0):
     if CU_ref_bal_elas == 0:
@@ -38,9 +38,9 @@ def simulate_refinery_production_oneyear(year_i, tcrc_series, sp2_series,
     sec_ratio_TCRC_elas=ref_hyper_param.loc['sec ratio TCRC elas', 'Value']
     sec_ratio_SP2_elas=ref_hyper_param.loc['sec ratio SP2 elas', 'Value']
     
-    t=pd.datetime(year_i, 1, 1)
-    t_lag_1=pd.datetime(year_i-1, 1, 1)
-    t_lag_2=pd.datetime(year_i-2, 1, 1)
+    t=datetime(year_i, 1, 1)
+    t_lag_1=datetime(year_i-1, 1, 1)
+    t_lag_2=datetime(year_i-2, 1, 1)
     
     tcrc_growth=tcrc_series.loc[t]/tcrc_series.loc[t_lag_1]
     sp2_growth=sp2_series.loc[t]/sp2_series.loc[t_lag_1]

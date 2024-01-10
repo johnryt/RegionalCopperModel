@@ -21,7 +21,7 @@ from cn_blending import *
 import warnings
 warnings.filterwarnings("ignore") # to deal with pandas datetime deprecation
 
-reinitialize_historical = True
+reinitialize_historical = False
 
 def system_initialization():
     # Set rollover to 1 for previous year's scrap becoming the new year's scrap
@@ -91,6 +91,7 @@ def system_initialization():
 
     # Cathode price
     cathode_price_series=pd.Series(0, index=history_time)
+    historical_lme_price=historical_lme_price.loc[historical_lme_price.index.notna()]
     cathode_price_series.loc[:'20180101']=historical_lme_price.values
     cathode_bal_l1 = pd.Series(0, index = np.arange(2018,2041))
     scrap_bal_l1 = pd.Series(0, index = np.arange(2018,2041))
@@ -99,6 +100,7 @@ def system_initialization():
     
     # TCRC
     tcrc_series=pd.Series(0, index=history_time)
+    historical_tcrc=historical_tcrc.loc[historical_tcrc.index.notna()]
     tcrc_series.loc[:'20180101']=historical_tcrc.values
     tcrc_series_cn=pd.Series(0, index=history_time)
     tcrc_series_cn.loc[:'20180101']=historical_tcrc.values
@@ -107,6 +109,9 @@ def system_initialization():
 
     # Scrap spreads (No.2, No.1, alloyed)
     sp2_series=pd.Series(0, index=history_time)
+    historical_sp1=historical_sp1.loc[historical_sp1.index.notna()]
+    historical_sp2=historical_sp2.loc[historical_sp2.index.notna()]
+    historical_spa=historical_spa.loc[historical_spa.index.notna()]
     sp2_series.loc[:'20180101']=historical_sp2.values
     sp2_series_cn=pd.Series(0, index=history_time)
     sp2_series_cn.loc[:'20180101']=historical_sp2.values
@@ -1298,9 +1303,9 @@ if __name__=='__main__':
         for year_i in np.arange(2018, 2041):
 
             print('  ', year_i, scenarios[scenario])
-            t=pd.datetime(year_i, 1, 1)
-            t_lag_1=pd.datetime(year_i-1, 1, 1)
-            t_lag_2=pd.datetime(year_i-2, 1, 1)
+            t=datetime(year_i, 1, 1)
+            t_lag_1=datetime(year_i-1, 1, 1)
+            t_lag_2=datetime(year_i-2, 1, 1)
 
             #### Scenario parameters ####
             sort_eff=sort_eff_series.loc[year_i]
@@ -1462,7 +1467,8 @@ if __name__=='__main__':
 
                 # Total production statistics
                 prod_new=mine_life_stats_panel_new.loc[:, idx[:, 'Recovered metal production (kt)']].sum(axis=1)
-                sxew_new=mine_life_stats_panel_new.loc[:, idx[sxew_id_new, 'Recovered metal production (kt)']].sum(axis=1)
+                sxew_id_new_current = np.intersect1d(sxew_id_new, mine_life_stats_panel_new.columns.get_level_values(0).unique())
+                sxew_new=mine_life_stats_panel_new.loc[:, idx[sxew_id_new_current, 'Recovered metal production (kt)']].sum(axis=1)
                 conc_new=prod_new-sxew_new
 
                 # Update incentive pool info

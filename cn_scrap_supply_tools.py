@@ -105,14 +105,18 @@ def old_scrap_gen_init(product_eol_history, prod_to_waste, product_to_cathode_al
                                    len(prod_to_waste.columns)),list(prod_to_waste.columns)*len(product_eol_history.index)))),
                                    columns=prod_to_waste.index)
     metal_recovered_sectorial = waste_sectorial.copy()
-    for i in waste_sectorial.index.levels[0]:
+    for i in waste_sectorial.index.get_level_values(0).unique():
+        if i=='Loss':
+            continue
         waste_sectorial.loc[idx[i,:],:] = (product_eol_history.loc[i,:]*prod_to_waste.transpose()).values
-        for j in waste_sectorial.index.levels[1]:
+        for j in waste_sectorial.index.get_level_values(1).unique():
+            if i=='Loss' or j=='Loss':
+                continue
             metal_recovered_sectorial.loc[idx[i,j],:] = waste_sectorial.loc[idx[i,j],:] * collect_rate[j]*sort_eff[j]
     
     # Getting rid of the waste classifications - for multi-indexed part
-    metal_recovered = pd.DataFrame(0,index = metal_recovered_sectorial.index.levels[0],columns = metal_recovered_sectorial.columns)
-    for i in metal_recovered_sectorial.index.levels[0]:
+    metal_recovered = pd.DataFrame(0,index = metal_recovered_sectorial.index.get_level_values(0).unique(),columns = metal_recovered_sectorial.columns)
+    for i in metal_recovered_sectorial.index.get_level_values(0).unique():
         metal_recovered.loc[i,:] = metal_recovered_sectorial.loc[idx[i,:],:].sum(axis=0)
 
     # Further Breakdown into Alloyed vs Unalloyed

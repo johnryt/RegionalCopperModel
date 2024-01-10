@@ -4,7 +4,7 @@ import scipy.integrate as integrate
 from scipy.stats import norm
 from dateutil.relativedelta import relativedelta
 idx=pd.IndexSlice
-
+from datetime import datetime
 
 def integrand(x, mu, sigma, base):
     return norm.pdf(x, loc=mu, scale=sigma) * base**x
@@ -110,7 +110,7 @@ def demand_prediction_mi(price_series, gdp_growth_prediction, intensity_init, vo
 def intensity_prediction_one_year(year_i, price_series, gdp_growth_prediction, intensity_last, volume_prediction, 
                                elas_mat, method='sec and reg'):
 
-    t=pd.datetime(year_i, 1, 1)
+    t=datetime(year_i, 1, 1)
     regions=['China', 'EU', 'Japan', 'NAM', 'ROW']
     sectors=['Construction', 'Electrical', 'Industrial', 'Transport', 'Other']
     columns_mi=pd.MultiIndex.from_product([sectors, regions], names=['Sector', 'Region'])
